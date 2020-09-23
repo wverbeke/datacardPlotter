@@ -8,11 +8,12 @@ def readProcessNamesAndIndices( datacard_lines ):
     for line in datacard_lines:
 
         #datacards typically have two lines starting with process, the first one giving the names of each process
-        if line.startswith( 'process' ) and counter == 0:
-            processes = line.split()[1:]
-            counter += 1
-        elif line.startswith( 'process' ):
-            process_indices = [ int(i) for i in line.split()[1:] ]
+        if line.startswith( 'process' ):
+            if counter == 0:
+                processes = line.split()[1:]
+                counter += 1
+            else:
+                process_indices = [ int(i) for i in line.split()[1:] ]
 
     if ( not processes ) or ( not process_indices ):
         raise LookupError( 'Either no list of processes or process indices was found in the datacard.' )
@@ -97,7 +98,7 @@ class Datacard:
             lines = f.readlines()
         
         processIndex_to_name = readProcessNamesAndIndices( lines )
-        self.__process_names = [ p for _, p in processIndex_to_name.items() ]
+        self.__process_is_signal = { p : ( i <= 0 ) for i, p in processIndex_to_name.items() } 
         
         normalization_uncertainty_lines = [ l for l in lines if lineIsNormNuisance( l ) ]
         self.__normalization_uncertainties = buildProcessToUncDict( normalization_uncertainty_lines, processIndex_to_name )
@@ -111,7 +112,14 @@ class Datacard:
 
 
     def processNames( self ):
-        return self.__process_names
+        return self.__process_is_signal.keys()
+
+    
+    def isSignal( self, process_name ):
+        try:
+            return self.__process_is_signal[ process_name ]
+        except KeyError:
+            return False
 
 
     def __findUncertaintySize( self, uncertainty_name, process_name, uncertainty_dictionary ):

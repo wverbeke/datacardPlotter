@@ -19,10 +19,10 @@ def buildHistogramDictionary( root_file_path ):
     return histogram_dict
 
 
-def processCollectionFromCard( datacard, histogram_dict ):
+def processCollectionFromCard( datacard, histogram_dict, signal_only = False ):
 	process_list = []
 	for p in datacard.processNames():
-		process_list.append( Process( p, histogram_dict, datacard, 'TChi' in p ) )
+		process_list.append( Process( p, histogram_dict, datacard, datacard.isSignal( p ) ) )
 	return ProcessCollection( process_list )
 
 
