@@ -1,5 +1,3 @@
-
-
 import ROOT
 
 from style import setStyle
@@ -13,7 +11,7 @@ if __name__ == '__main__':
     #set plotting style
     setStyle()
 
-    datacard_path_2016 = 'exampleDatacards/2016/deltaM_300/datacard_SR_new_TChiWZ_mChi2_600_mChi1_300_2016.txt'
+    datacard_path_2016 = 'exampleDatacards/2016/datacard_SR_new_TChiWZ_mChi2_600_mChi1_100_2016.txt'
     datacard_path_2017 = datacard_path_2016.replace( '2016', '2017' )
     datacard_path_2018 = datacard_path_2016.replace( '2016', '2018' )
 

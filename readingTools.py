@@ -20,33 +20,48 @@ def buildHistogramDictionary( root_file_path ):
 
 
 def processCollectionFromCard( datacard, histogram_dict, signal_only = False ):
-	process_list = []
-	for p in datacard.processNames():
-		process_list.append( Process( p, histogram_dict, datacard, datacard.isSignal( p ) ) )
-	return ProcessCollection( process_list )
+    process_list = []
+    for p in datacard.processNames():
+        if signal_only and not datacard.isSignal( p ) : continue
+        process_list.append( Process( p, histogram_dict, datacard, datacard.isSignal( p ) ) )
+    return ProcessCollection( process_list )
 
 
 #given several datacards, construct the merged ProcessCollection and data
 def buildProcessCollectionAndData( datacard_paths ):
-	datacards = [ Datacard( path ) for path in datacard_paths ]
-	total_process_collection = None
-	total_data = None
-	for card in datacards:
-		histogram_dict = buildHistogramDictionary( card.shapeFilePath() )
+    datacards = [ Datacard( path ) for path in datacard_paths ]
+    total_process_collection = None
+    total_data = None
+    for card in datacards:
+        histogram_dict = buildHistogramDictionary( card.shapeFilePath() )
+        
+        #merge process collections
+        proc_col = processCollectionFromCard( card, histogram_dict, False )
+        if total_process_collection is None:
+            total_process_collection = proc_col
+        else:
+            total_process_collection += proc_col
+        
+        #merge data
+        if total_data is None:
+            total_data = histogram_dict[ 'data_obs' ]
+        else:
+            total_data.Add( histogram_dict[ 'data_obs' ] )
+    return total_data, total_process_collection
 
-		#merge process collections
-		proc_col = processCollectionFromCard( card, histogram_dict )
-		if total_process_collection is None:
-			total_process_collection = proc_col
-		else:
-			total_process_collection += proc_col
 
-		#merge data
-		if total_data is None:
-			total_data = histogram_dict[ 'data_obs' ]
-		else:
-			total_data.Add( histogram_dict[ 'data_obs' ] )
-	return total_data, total_process_collection
+def buildSignalProcessCollection( datacard_paths ):
+    datacards = [ Datacard( path ) for path in datacard_paths ]
+    signal_process_collection = None
+    for card in datacards:
+        histogram_dict = buildHistogramDictionary( card.shapeFilePath() )
+        sig_col = processCollectionFromCard( card, histogram_dict, True )
+        if signal_process_collection is None:
+            signal_process_collection = sig_col
+        else:
+            signal_process_collection += sig_col
+    return signal_process_collection
+
 
 
 if __name__ == '__main__':

@@ -39,7 +39,7 @@ def setStyle():
     style.SetOptStat(0)
     style.SetStatColor(ROOT.kWhite)
     style.SetStatFont(42)
-    style.SetLegendFont(42)
+    style.SetLegendFont(63) #43 to have the non-bold font
     style.SetStatFontSize(0.08)
     style.SetStatTextColor(1)
     style.SetStatFormat("6.4g")

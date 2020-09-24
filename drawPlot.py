@@ -10,7 +10,7 @@ from ROOT import TCanvas, TPad, TGraphAsymmErrors, TLegend, TLine, TLatex
 from drawCMSHeader import drawCMSHeader
 
 
-def colorHistogram( hist, color ):
+def colorBackground( hist, color ):
 	
     #black lines between processes
     hist.SetLineColor( ROOT.kBlack )
@@ -24,8 +24,19 @@ def colorHistogram( hist, color ):
 def colorProcesses( processCollection, color_dict ):
     for p in processCollection:
         if p.isSignal() : continue
-        colorHistogram( p.nominal(), color_dict[ p.name() ] )
+        colorBackground( p.nominal(), color_dict[ p.name() ] )
 
+
+def colorSignal( hist, color ):
+
+    #for signal we only display and color a line
+    hist.SetLineColor( color )
+    hist.SetLineWidth( 2 )
+
+
+def colorSignals( processCollection, color_dict ):
+    for s in processCollection.signals():
+        colorSignal( s.nominal(), color_dict[ s.name() ] )
 
 
 def blindedData( data ):
@@ -70,24 +81,32 @@ def makeAndDivideCanvas( width, height, lower_pad_fraction ):
     return c, upper_pad, lower_pad
 
 
-def makeUpperLegend( data, processCollection, bkg_total, legend_names = None ):
+def addProcessToLegend( legend, process, draw_option, legend_names = None ):
+    name = process.name()
+    if legend_names is not None:
+        try:
+            name = legend_names[ process.name() ]
+        except KeyError:
+            pass
+    legend.AddEntry( process.nominal(), name, draw_option )
 
-    legend = TLegend(0.25, 0.73, 0.87, 0.92, '', 'brNDC');
-    legend.SetNColumns( 2 )
+
+def makeUpperLegend( data, processCollection, bkg_total, legend_names = None, draw_signal = False, signal_legend_names = None ):
+
+    legend = TLegend( 0.25, 0.73, 0.87, 0.92, '', 'brNDC' );
+    legend.SetNColumns( 3 ) if draw_signal else legend.SetNColumns( 2 )
     legend.SetFillStyle( 0 ) #avoid box
-    legend.SetBorderSize(0)
-    
+    legend.SetBorderSize( 0 )
+
     legend.AddEntry( data, 'Data', 'pe1' )
     for p in processCollection:
         if p.isSignal(): continue
-        name = p.name()
-        if legend_names is not None:
-            try:
-                name = legend_names[ p.name () ]
-            except KeyError:
-                pass
-        legend.AddEntry( p.nominal(), name, 'f' )
+        addProcessToLegend( legend, p, 'f', legend_names )
     legend.AddEntry( bkg_total, 'Total bkg. unc.', 'f' )
+
+    if draw_signal:
+        for s in processCollection.signals():
+            addProcessToLegend( legend, s, 'l', signal_legend_names )
     
     return legend
 
@@ -101,45 +120,45 @@ def maximum( data, bkg_total ):
 
 #compute minumum entry to be drawn on plot, but ignore zeroes
 def minimum( data, bkg_total ):
-	total_min = maximum( data, bkg_total )
-
-	assert ( data.GetNbinsX() == bkg_total.GetNbinsX() )
-	for b in range( 1, data.GetNbinsX() + 1 ):
-		data_bin = data.GetBinContent( b )
-		bkg_bin = bkg_total.GetBinContent( b )
-		if data_bin != 0 and data_bin < total_min :
-			total_min = data_bin
-		if bkg_bin != 0 and bkg_bin < total_min :
-			total_min = bkg_bin
-	return total_min
+    total_min = maximum( data, bkg_total )
+    
+    assert ( data.GetNbinsX() == bkg_total.GetNbinsX() )
+    for b in range( 1, data.GetNbinsX() + 1 ):
+        data_bin = data.GetBinContent( b )
+        bkg_bin = bkg_total.GetBinContent( b )
+        if data_bin != 0 and data_bin < total_min :
+            total_min = data_bin
+        if bkg_bin != 0 and bkg_bin < total_min :
+            total_min = bkg_bin
+    return total_min
 
 
 #compute range of upper plot 
 def rangeLinear( data, background ):
-	total_max = maximum( data, background )
-	return 0, total_max
+    total_max = maximum( data, background )
+    return 0, total_max
 
 
 def rangeLog( data, background ):
 	
-	total_min = minimum( data, background )
-	total_max = maximum( data, background )
-	
-	#set minimum to be 5 times smaller than the smallest background yield 
-	total_min /= 5
-	
-	#compute the number of axis divisions ( powers of 10 ) between minimum and maximum
-	number_of_orders = math.log10( total_max / total_min )
-	
-	#the plot maximum should be 50% higher in terms of relative canvas size than total_max 
-	total_max = total_max * 10**( 0.5 * number_of_orders )
-	return total_min, total_max
+    total_min = minimum( data, background )
+    total_max = maximum( data, background )
+    
+    #set minimum to be 5 times smaller than the smallest background yield 
+    total_min /= 5
+    
+    #compute the number of axis divisions ( powers of 10 ) between minimum and maximum
+    number_of_orders = math.log10( total_max / total_min )
+    
+    #the plot maximum should be 50% higher in terms of relative canvas size than total_max 
+    total_max = total_max * 10**( 0.5 * number_of_orders )
+    return total_min, total_max
 
 
 def setRelativeUncStyle( relative_unc, color ):
-	relative_unc.SetFillStyle( 1001 )
-	relative_unc.SetMarkerStyle( 1 )
-	relative_unc.SetFillColor( color )
+    relative_unc.SetFillStyle( 1001 )
+    relative_unc.SetMarkerStyle( 1 )
+    relative_unc.SetFillColor( color )
 
 
 def setRatioPlotStyle( first_hist, lower_pad_fraction ):
@@ -225,9 +244,10 @@ def makeLabel( label_text ):
     label.SetTextSize( 0.04 )
     label.SetTextAngle( 0 )
     return label
-	
 
-def drawPlot( data, processCollection, plot_name, color_dict = None, log = True, lower_pad_fraction = 0.25, legend_names = None, lumi_text = '137 fb^{-1} (13 TeV)', width = 1000, height = 600, additional_label = None, expected = False ):
+
+
+def drawPlot( data, processCollection, plot_name, color_dict = None, log = True, lower_pad_fraction = 0.25, legend_names = None, lumi_text = '137 fb^{-1} (13 TeV)', width = 1000, height = 600, additional_label = None, expected = False, draw_signal = False, signal_legend_names = None, signal_color_dict = None ):
 
     #order background processes by yield
     processCollection.orderByYield()
@@ -235,6 +255,12 @@ def drawPlot( data, processCollection, plot_name, color_dict = None, log = True,
     #color the histograms
     if color_dict is not None:
         colorProcesses( processCollection, color_dict )
+
+
+    #color signals
+    if draw_signal and signal_color_dict is not None:
+        colorSignals( processCollection, signal_color_dict )
+
 
     #blind data for expected plot
     if expected:
@@ -260,8 +286,8 @@ def drawPlot( data, processCollection, plot_name, color_dict = None, log = True,
     if log:
         upper_pad.SetLogy()
     
-    legend = makeUpperLegend( data_graph, processCollection, bkg_total_syst, legend_names )
-    
+    legend = makeUpperLegend( data_graph, processCollection, bkg_total_syst, legend_names, draw_signal, signal_legend_names )
+
     #determine plot range 
     if log:
         range_min, range_max = rangeLog( data, bkg_total_syst )
@@ -275,14 +301,21 @@ def drawPlot( data, processCollection, plot_name, color_dict = None, log = True,
     
     bkg_total_syst.Draw( 'e2' )
     stack.Draw( 'histsame' )
+
+    #draw signals if requested
+    #they are already added to the legend
+    if draw_signal:
+        for s in processCollection.signals():
+            s.nominal().Draw( 'histsame' )
+
     legend.Draw( 'same' )
-    
+
     #redraw total background uncertainty so it overlays the stack
     bkg_total_syst.Draw( 'e2same' )
     data_graph.Draw( 'pe1same' )
-    upper_pad.RedrawAxis()
     drawCMSHeader( upper_pad, lumi_text, 'Preliminary' )
-    
+
+    #temporary draw of signals
     upper_pad.RedrawAxis()
     
     if additional_label is not None:

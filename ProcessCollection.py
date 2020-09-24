@@ -119,8 +119,18 @@ class ProcessCollection:
             lhs_p = self.__getitem__( rhs_p.name() )
             lhs_p += rhs_p
         return self
-            
 
+
+    def addSignalCollection( self, signal_collection ):
+        for s in signal_collection:
+            self.__processes.append( s )
+            self.__uncertainties = self.__uncertainties.union( set( s.uncertaintySources() ) )
+
+
+    def signals( self ):
+        for p in self.__processes:
+            if p.isSignal():
+                yield p
 
 
 
