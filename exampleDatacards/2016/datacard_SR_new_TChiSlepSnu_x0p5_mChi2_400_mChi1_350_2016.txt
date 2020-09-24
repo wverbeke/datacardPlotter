@@ -1,26 +1,24 @@
 imax 1 number of channels 
 jmax 6 number of backgrounds 
-kmax 42 number of nuisance parameters (sources of systematical uncertainties) 
+kmax 40 number of nuisance parameters (sources of systematical uncertainties) 
 ---------------------------------------------------------------------------------------- 
 bin bin1 
-observation 6053
+observation 4186
 ---------------------------------------------------------------------------------------- 
-shapes * * shapes/shapeFile_SR_new_TChiWZ_mChi2_600_mChi1_300_2017.root  $PROCESS $PROCESS_$SYSTEMATIC
+shapes * * shapes/shapeFile_SR_new_TChiSlepSnu_x0p5_mChi2_400_mChi1_350_2016.root  $PROCESS $PROCESS_$SYSTEMATIC
 ---------------------------------------------------------------------------------------- 
 bin		bin1	bin1	bin1	bin1	bin1	bin1	bin1
-process	TChiWZ_mChi2_600_mChi1_300	WZ	Xgamma	ZZH	TTX	Multiboson	Nonprompt
+process	TChiSlepSnu_x0p5_mChi2_400_mChi1_350	WZ	Xgamma	ZZH	TTX	Multiboson	Nonprompt
 process	0	1	2	3	4	5	6
-rate	5.6997	3657.55	359.524	402.749	181.041	51.3683	861.101
+rate	307.414	3159.22	202.911	247.44	165.797	45.3253	537.344
 ---------------------------------------------------------------------------------------- 
-lumi_2017	lnN	1.02	1.02	1.02	1.02	1.02	1.02	-
-lumi_XY	lnN	1.008	1.008	1.008	1.008	1.008	1.008	-
+lumi_2016	lnN	1.022	1.022	1.022	1.022	1.022	1.022	-
+lumi_XY	lnN	1.009	1.009	1.009	1.009	1.009	1.009	-
 lumi_bbd	lnN	1.004	1.004	1.004	1.004	1.004	1.004	-
-lumi_calib	lnN	1.003	1.003	1.003	1.003	1.003	1.003	-
 lumi_dbeta	lnN	1.005	1.005	1.005	1.005	1.005	1.005	-
-lumi_ghosts	lnN	1.001	1.001	1.001	1.001	1.001	1.001	-
-lumi_length	lnN	1.003	1.003	1.003	1.003	1.003	1.003	-
+lumi_ghosts	lnN	1.004	1.004	1.004	1.004	1.004	1.004	-
 triggereffbias	lnN	1.02	1.02	1.02	1.02	1.02	1.02	-
-triggereffstat_2017	lnN	1.01	1.01	1.01	1.01	1.01	1.01	-
+triggereffstat_2016	lnN	1.01	1.01	1.01	1.01	1.01	1.01	-
 JESCORR	shape	-	1	1	1	1	1	1
 JESFS	shape	1	-	-	-	-	-	-
 JER	shape	-	1	1	1	1	1	1

@@ -1,0 +1,54 @@
+imax 1 number of channels 
+jmax 6 number of backgrounds 
+kmax 39 number of nuisance parameters (sources of systematical uncertainties) 
+---------------------------------------------------------------------------------------- 
+bin bin1 
+observation 7987
+---------------------------------------------------------------------------------------- 
+shapes * * shapes/shapeFile_SR_new_TChiWZ_mChi2_600_mChi1_100_2018.root  $PROCESS $PROCESS_$SYSTEMATIC
+---------------------------------------------------------------------------------------- 
+bin		bin1	bin1	bin1	bin1	bin1	bin1	bin1
+process	TChiWZ_mChi2_600_mChi1_100	WZ	Xgamma	ZZH	TTX	Multiboson	Nonprompt
+process	0	1	2	3	4	5	6
+rate	9.09286	5465.08	373.022	534.1	261.866	77.7629	843.291
+---------------------------------------------------------------------------------------- 
+lumi_2018	lnN	1.015	1.015	1.015	1.015	1.015	1.015	-
+lumi_XY	lnN	1.02	1.02	1.02	1.02	1.02	1.02	-
+lumi_calib	lnN	1.002	1.002	1.002	1.002	1.002	1.002	-
+lumi_length	lnN	1.002	1.002	1.002	1.002	1.002	1.002	-
+triggereffbias	lnN	1.02	1.02	1.02	1.02	1.02	1.02	-
+triggereffstat_2018	lnN	1.01	1.01	1.01	1.01	1.01	1.01	-
+JESCORR	shape	-	1	1	1	1	1	1
+JESFS	shape	1	-	-	-	-	-	-
+JER	shape	-	1	1	1	1	1	1
+JERFS	shape	1	-	-	-	-	-	-
+uncl	shape	1	1	1	1	1	1	1
+scale_sig	shape	1	-	-	-	-	-	-
+scale_WZ	shape	-	1	-	-	-	-	-
+scale_Xgamma	shape	-	-	1	-	-	-	-
+scale_ZZH	shape	-	-	-	1	-	-	-
+scale_TTX	shape	-	-	-	-	1	-	-
+scale_Multiboson	shape	-	-	-	-	-	1	-
+PUW	shape	1	1	1	1	1	1	1
+btag_HF	shape	-	1	1	1	1	1	1
+btag_HFFS	shape	1	-	-	-	-	-	-
+btag_LF	shape	-	1	1	1	1	1	1
+btag_LFFS	shape	1	-	-	-	-	-	-
+prefire	shape	1	1	1	1	1	1	1
+lepton_reco	shape	1	1	1	1	1	1	1
+lepSF	shape	1	1	1	1	1	1	1
+pdf_sig	shape	1	-	-	-	-	-	-
+pdf_WZ	shape	-	1	-	-	-	-	-
+pdf_Xgamma	shape	-	-	1	-	-	-	-
+pdf_ZZH	shape	-	-	-	1	-	-	-
+pdf_TTX	shape	-	-	-	-	1	-	-
+pdf_Multiboson	shape	-	-	-	-	-	1	-
+shapeWZ	shape	-	1	-	-	-	-	-
+sigMET	shape	1	-	-	-	-	-	-
+normMultiboson	lnN	-	-	-	-	-	1.5	-
+fakes	lnN	-	-	-	-	-	-	1.3
+normTTX	lnN	-	-	-	-	1.15	-	-
+normWZ	lnN	-	1.1	-	-	-	-	-
+normXgamma	lnN	-	-	1.15	-	-	-	-
+normZZH	lnN	-	-	-	1.1	-	-	-
+* autoMCStats 0
