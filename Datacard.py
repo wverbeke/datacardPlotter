@@ -81,7 +81,6 @@ def extractShapePathLine( datacard_lines ):
 
 def extractShapeFilePath( datacard_lines ):
     shape_path_line = extractShapePathLine( datacard_lines )
-    shape_path = None
     for part in shape_path_line.split():
         if '.root' in part:
             return part
